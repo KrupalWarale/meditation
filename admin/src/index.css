@@ -1,0 +1,20 @@
+/**
+ * File: index.css
+ *
+ * Description: Global stylesheet for the admin panel. Imports Inter and Playfair Display
+ * web fonts, initializes Tailwind CSS layers, and sets base body typography and colors.
+ *
+ * Author: Navnit(Ninjacode911)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #FAFAF5;
+  color: #1A1A2E;
+}
