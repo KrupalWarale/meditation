@@ -1,0 +1,49 @@
+# -----------------------------------------------------------------------------
+# Fly.io configuration for the MAA backend API.
+# Customize `app` to your Fly app name (set on first `fly launch`).
+# -----------------------------------------------------------------------------
+
+app = "maa-backend"
+# Pick the region closest to your users / Supabase project. Defaults to
+# Mumbai (bom) for an India-targeted app. Run `fly platform regions` to list.
+primary_region = "bom"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "3000"
+  # Real secrets live in Fly secrets (set via `fly secrets set`), NOT here.
+  # Required secrets:
+  #   SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY,
+  #   ALLOWED_ORIGINS  (comma-separated list of admin/web origins)
+
+# HTTP service + load balancer.
+# `auto_stop_machines = "stop"` + `min_machines_running = 0` makes the app
+# scale to zero when idle on Fly's free allowance. There IS a cold start
+# (~1-3s) on the first request after idle, but no monthly bill until usage
+# crosses the free tier ceiling. Flip to `min_machines_running = 1` once
+# you start onboarding real users.
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/health"
+
+# VM size — shared 1x256MB is the cheapest Fly machine and is enough for
+# Express + Supabase passthrough. Bump to `shared-cpu-1x` with `memory = "512MB"`
+# if you start seeing OOM kills under load.
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
+  cpus = 1
+  cpu_kind = "shared"
